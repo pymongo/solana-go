@@ -7,7 +7,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,6 @@ import (
 
 	bin "github.com/gagliardetto/binary"
 	"github.com/gagliardetto/solana-go"
-	"go.uber.org/zap"
 )
 
 type AccountFlag uint64
@@ -129,8 +128,8 @@ func (o *Orderbook) Items(descending bool, f func(node *SlabLeafNode) error) err
 	stack := []uint32{o.Root}
 	for len(stack) > 0 {
 		index, stack = stack[len(stack)-1], stack[:len(stack)-1]
-		if traceEnabled {
-			zlog.Debug("looking at slab index", zap.Int("index", int(index)))
+		if false {
+			// zlog.Debug("looking at slab index", // zap.Int("index", int(index)))
 		}
 		slab := o.Nodes[index]
 		impl := slab.Impl
@@ -142,8 +141,8 @@ func (o *Orderbook) Items(descending bool, f func(node *SlabLeafNode) error) err
 				stack = append(stack, s.Children[1], s.Children[0])
 			}
 		case *SlabLeafNode:
-			if traceEnabled {
-				zlog.Debug("found leaf", zap.Int("leaf", int(index)))
+			if false {
+				// zlog.Debug("found leaf", // zap.Int("leaf", int(index)))
 			}
 			if err := f(s); err != nil {
 				return err

@@ -1,17 +1,18 @@
 module github.com/gagliardetto/solana-go
 
-go 1.19
+go 1.17
 
 require (
 	github.com/gagliardetto/binary v0.8.0
 	github.com/gagliardetto/gofuzz v1.2.2
 	github.com/gagliardetto/treeout v0.1.4
 	github.com/google/uuid v1.6.0
+	go.uber.org/ratelimit v0.3.1
 )
 
 require (
 	cloud.google.com/go v0.56.0 // indirect
-	github.com/andres-erbsen/clock v0.0.0-20160526145045-9e14626cd129 // indirect
+	github.com/benbjohnson/clock v1.3.0 // indirect
 	github.com/blendle/zapdriver v1.3.1 // indirect
 	github.com/daaku/go.zipexe v1.0.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.7 // indirect
@@ -33,9 +34,9 @@ require (
 	github.com/spf13/cast v1.3.0 // indirect
 	github.com/spf13/jwalterweatherman v1.0.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
-	github.com/tidwall/pretty v1.2.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
+	go.uber.org/zap v1.21.0 // indirect
 	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
 	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f // indirect
 	golang.org/x/text v0.7.0 // indirect
@@ -60,8 +61,8 @@ require (
 	github.com/gorilla/rpc v1.2.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/json-iterator/go v1.1.12
-	github.com/klauspost/compress v1.13.6
-	github.com/logrusorgru/aurora v2.0.3+incompatible
+	github.com/klauspost/compress v1.15.15
+	github.com/logrusorgru/aurora v2.0.3+incompatible // indirect
 	github.com/mostynb/zstdpool-freelist v0.0.0-20201229113212-927304c0c3b1
 	github.com/mr-tron/base58 v1.2.0
 	github.com/onsi/gomega v1.10.1
@@ -74,8 +75,6 @@ require (
 	github.com/stretchr/testify v1.7.0
 	go.mongodb.org/mongo-driver v1.12.2
 	go.opencensus.io v0.22.5 // indirect
-	go.uber.org/ratelimit v0.2.0
-	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect

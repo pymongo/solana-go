@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
-	"sync/atomic"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/google/uuid"
@@ -167,7 +166,7 @@ type RPCClient interface {
 type RPCRequest struct {
 	Method  string      `json:"method"`
 	Params  interface{} `json:"params,omitempty"`
-	ID      any         `json:"id"`
+	ID      interface{} `json:"id"`
 	JSONRPC string      `json:"jsonrpc"`
 }
 
@@ -199,7 +198,7 @@ type RPCResponse struct {
 	JSONRPC string             `json:"jsonrpc"`
 	Result  stdjson.RawMessage `json:"result,omitempty"`
 	Error   *RPCError          `json:"error,omitempty"`
-	ID      any                `json:"id"`
+	ID      interface{}        `json:"id"`
 }
 
 // RPCError represents a JSON-RPC error object if an RPC error occurred.
@@ -279,8 +278,8 @@ type RPCClientOpts struct {
 type RPCResponses []*RPCResponse
 
 // AsMap returns the responses as map with response id as key.
-func (res RPCResponses) AsMap() map[any]*RPCResponse {
-	resMap := make(map[any]*RPCResponse, 0)
+func (res RPCResponses) AsMap() map[interface{}]*RPCResponse {
+	resMap := make(map[interface{}]*RPCResponse, 0)
 	for _, r := range res {
 		actualID := r.ID
 		if actualID != nil {
@@ -299,7 +298,7 @@ func (res RPCResponses) AsMap() map[any]*RPCResponse {
 }
 
 // GetByID returns the response object of the given id, nil if it does not exist.
-func (res RPCResponses) GetByID(id any) *RPCResponse {
+func (res RPCResponses) GetByID(id interface{}) *RPCResponse {
 	for _, r := range res {
 		if r.ID == id {
 			return r
@@ -532,18 +531,19 @@ func (client *rpcClient) doCall(
 
 var UseIntegerID = false
 
-var integerID = new(atomic.Uint64)
+var integerID = 0
 
 var useFixedID = false
 
 const defaultFixedID = 1
 
-func newID() any {
+func newID() interface{} {
 	if useFixedID {
 		return defaultFixedID
 	}
 	if UseIntegerID {
-		return integerID.Add(1)
+		integerID += 1
+		return integerID
 	}
 	return uuid.New().String()
 }

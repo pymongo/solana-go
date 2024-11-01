@@ -27,7 +27,6 @@ import (
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
 	"github.com/gagliardetto/solana-go/rpc/ws"
-	"go.uber.org/zap"
 )
 
 //go:generate rice embed-go
@@ -118,9 +117,8 @@ func StreamOpenOrders(client *ws.Client) error {
 		err = bin.NewBinDecoder(res.Value.Account.Data.GetBinary()).Decode(&f)
 		if err != nil {
 			fmt.Println("***********************************", err)
-			zlog.Debug("unable to decoce account flag for account... skipping",
-				zap.Stringer("account_address", res.Value.Pubkey),
-			)
+			// zlog.Debug("unable to decoce account flag for account... skipping") // zap.Stringer("account_address", res.Value.Pubkey),
+
 			continue
 		}
 		fmt.Printf("%d - %s\n", count, f.String())

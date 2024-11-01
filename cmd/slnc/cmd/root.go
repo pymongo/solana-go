@@ -57,7 +57,7 @@ func init() {
 	RootCmd.PersistentFlags().StringP("kms-gcp-keypath", "", "", "Path to the cryptoKeys within a keyRing on GCP")
 
 	RootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		SetupLogger()
+		// SetupLogger()
 		return nil
 	}
 }

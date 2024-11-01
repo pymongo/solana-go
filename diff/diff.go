@@ -21,7 +21,6 @@ import (
 	"strings"
 
 	"github.com/google/go-cmp/cmp"
-	"go.uber.org/zap"
 )
 
 type Diffeable interface {
@@ -216,8 +215,8 @@ type diffReporter struct {
 }
 
 func (r *diffReporter) PushStep(ps cmp.PathStep) {
-	if traceEnabled {
-		zlog.Debug("pushing path step", zap.Stringer("step", ps))
+	if false {
+		// zlog.Debug("pushing path step", // zap.Stringer("step", ps))
 	}
 
 	r.path = append(r.path, ps)
@@ -228,8 +227,8 @@ func (r *diffReporter) Report(rs cmp.Result) {
 		lastStep := r.path.Last()
 		vLeft, vRight := lastStep.Values()
 		if !vLeft.IsValid() {
-			if traceEnabled {
-				zlog.Debug("added event", zap.Stringer("path", r.path))
+			if false {
+				// zlog.Debug("added event", // zap.Stringer("path", r.path))
 			}
 
 			// Left is not set but right is, we have added "right"
@@ -238,8 +237,8 @@ func (r *diffReporter) Report(rs cmp.Result) {
 		}
 
 		if !vRight.IsValid() {
-			if traceEnabled {
-				zlog.Debug("removed event", zap.Stringer("path", r.path))
+			if false {
+				// zlog.Debug("removed event", // zap.Stringer("path", r.path))
 			}
 
 			// Left is set but right is not, we have removed "left"
@@ -249,8 +248,8 @@ func (r *diffReporter) Report(rs cmp.Result) {
 
 		if isArrayPathStep(lastStep) {
 			// We might want to do this only on certain circumstances?
-			if traceEnabled {
-				zlog.Debug("array changed event, splitting in removed, added", zap.Stringer("path", r.path))
+			if false {
+				// zlog.Debug("array changed event, splitting in removed, added", // zap.Stringer("path", r.path))
 			}
 
 			r.notify(Event{Kind: KindRemoved, Path: Path(r.path), Old: vLeft})
@@ -258,8 +257,8 @@ func (r *diffReporter) Report(rs cmp.Result) {
 			return
 		}
 
-		if traceEnabled {
-			zlog.Debug("changed event", zap.Stringer("path", r.path))
+		if false {
+			// zlog.Debug("changed event", // zap.Stringer("path", r.path))
 		}
 
 		r.notify(Event{Kind: KindChanged, Path: Path(r.path), Old: vLeft, New: vRight})
@@ -267,8 +266,8 @@ func (r *diffReporter) Report(rs cmp.Result) {
 }
 
 func (r *diffReporter) PopStep() {
-	if traceEnabled {
-		zlog.Debug("popping path step", zap.Stringer("step", r.path[len(r.path)-1]))
+	if false {
+		// zlog.Debug("popping path step", // zap.Stringer("step", r.path[len(r.path)-1]))
 	}
 
 	r.path = r.path[:len(r.path)-1]

@@ -30,7 +30,6 @@ import (
 	"github.com/buger/jsonparser"
 	"github.com/gorilla/rpc/v2/json2"
 	"github.com/gorilla/websocket"
-	"go.uber.org/zap"
 )
 
 var ErrSubscriptionClosed = errors.New("subscription closed")
@@ -195,45 +194,45 @@ func (c *Client) handleNewSubscriptionMessage(requestID, subID uint64) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 
-	if traceEnabled {
-		zlog.Debug("received new subscription message",
-			zap.Uint64("message_id", requestID),
-			zap.Uint64("subscription_id", subID),
-		)
+	if false {
+		// zlog.Debug("received new subscription message",
+			// zap.Uint64("message_id", requestID),
+			// zap.Uint64("subscription_id", subID),
+		// )
 	}
 
 	callBack, found := c.subscriptionByRequestID[requestID]
 	if !found {
-		zlog.Error("cannot find websocket message handler for a new stream.... this should not happen",
-			zap.Uint64("request_id", requestID),
-			zap.Uint64("subscription_id", subID),
-		)
+		// zlog.Error("cannot find websocket message handler for a new stream.... this should not happen",
+			// zap.Uint64("request_id", requestID),
+			// zap.Uint64("subscription_id", subID),
+		// )
 		return
 	}
 	callBack.subID = subID
 	c.subscriptionByWSSubID[subID] = callBack
 
-	zlog.Debug("registered ws subscription",
-		zap.Uint64("subscription_id", subID),
-		zap.Uint64("request_id", requestID),
-		zap.Int("subscription_count", len(c.subscriptionByWSSubID)),
-	)
+	// zlog.Debug("registered ws subscription",
+		// zap.Uint64("subscription_id", subID),
+		// zap.Uint64("request_id", requestID),
+		// zap.Int("subscription_count", len(c.subscriptionByWSSubID)),
+	// )
 	return
 }
 
 func (c *Client) handleSubscriptionMessage(subID uint64, message []byte) {
-	if traceEnabled {
-		zlog.Debug("received subscription message",
-			zap.Uint64("subscription_id", subID),
-		)
+	if false {
+		// zlog.Debug("received subscription message",
+			// zap.Uint64("subscription_id", subID),
+		// )
 	}
 
 	c.lock.RLock()
 	sub, found := c.subscriptionByWSSubID[subID]
 	c.lock.RUnlock()
 	if !found {
-		zlog.Warn("unable to find subscription for ws message", zap.Uint64("subscription_id", subID))
-		return
+		// zlog.Warn("unable to find subscription for ws message", // zap.Uint64("subscription_id", subID))
+		// return
 	}
 
 	// Decode the message using the subscription-provided decoderFunc.
@@ -247,9 +246,9 @@ func (c *Client) handleSubscriptionMessage(subID uint64, message []byte) {
 	// this cannot be blocking or else
 	// we  will no read any other message
 	if len(sub.stream) >= cap(sub.stream) {
-		zlog.Warn("closing ws client subscription... not consuming fast en ought",
-			zap.Uint64("request_id", sub.req.ID),
-		)
+		// zlog.Warn("closing ws client subscription... not consuming fast en ought",
+		// 	zap.Uint64("request_id", sub.req.ID),
+		// )
 		c.closeSubscription(sub.req.ID, fmt.Errorf("reached channel max capacity %d", len(sub.stream)))
 		return
 	}
@@ -285,9 +284,9 @@ func (c *Client) closeSubscription(reqID uint64, err error) {
 
 	err = c.unsubscribe(sub.subID, sub.unsubscribeMethod)
 	if err != nil {
-		zlog.Warn("unable to send rpc unsubscribe call",
-			zap.Error(err),
-		)
+		// zlog.Warn("unable to send rpc unsubscribe call",
+		// 	zap.Error(err),
+		// )
 	}
 
 	delete(c.subscriptionByRequestID, sub.req.ID)
@@ -335,9 +334,9 @@ func (c *Client) subscribe(
 	)
 
 	c.subscriptionByRequestID[req.ID] = sub
-	zlog.Info("added new subscription to websocket client", zap.Int("count", len(c.subscriptionByRequestID)))
+	// zlog.Info("added new subscription to websocket client", zap.Int("count", len(c.subscriptionByRequestID)))
 
-	zlog.Debug("writing data to conn", zap.String("data", string(data)))
+	// zlog.Debug("writing data to conn", // zap.String("data", string(data)))
 	c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 	err = c.conn.WriteMessage(websocket.TextMessage, data)
 	if err != nil {

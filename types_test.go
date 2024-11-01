@@ -27,7 +27,7 @@ import (
 )
 
 func TestCompiledInstructions(t *testing.T) {
-	traceEnabled = true
+	// traceEnabled = true
 
 	ci := &CompiledInstruction{
 		ProgramIDIndex: 5,
