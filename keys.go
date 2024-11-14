@@ -25,8 +25,8 @@ import (
 	"crypto/sha256"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"math"
+	"os"
 	"sort"
 
 	"filippo.io/edwards25519"
@@ -75,27 +75,34 @@ func ValidatePrivateKey(b []byte) (bool, error) {
 	// check if the public key is on the ed25519 curve
 	pub := ed25519.PrivateKey(b).Public().(ed25519.PublicKey)
 	if !IsOnCurve(pub) {
-		return false, errors.New("the corresponding public key is not on the ed25519 curve")
+		return false, errors.New("the corresponding public key is NOT on the ed25519 curve")
 	}
 	return true, nil
 }
 
 func PrivateKeyFromSolanaKeygenFile(file string) (PrivateKey, error) {
-	content, err := ioutil.ReadFile(file)
+	content, err := os.ReadFile(file)
 	if err != nil {
 		return nil, fmt.Errorf("read keygen file: %w", err)
 	}
+	return PrivateKeyFromSolanaKeygenFileBytes(content)
+}
 
-	var privateKeyBytes []byte
-	err = json.Unmarshal(content, &privateKeyBytes)
+func PrivateKeyFromSolanaKeygenFileBytes(content []byte) (PrivateKey, error) {
+	var values []byte
+	err := json.Unmarshal(content, &values)
 	if err != nil {
 		return nil, fmt.Errorf("decode keygen file: %w", err)
 	}
-
-	if _, err := ValidatePrivateKey(privateKeyBytes); err != nil {
+	// check private key length, should be 64 bytes (TODO: are private keys always 64 bytes?)
+	if len(values) != 64 {
+		return nil, fmt.Errorf("invalid private key length %d", len(values))
+	}
+	prk := PrivateKey([]byte(values))
+	if _, err := ValidatePrivateKey(prk); err != nil {
 		return nil, fmt.Errorf("invalid private key: %w", err)
 	}
-	return PrivateKey(privateKeyBytes), nil
+	return prk, nil
 }
 
 func (k PrivateKey) String() string {
@@ -717,4 +724,20 @@ func FindTokenMetadataAddress(mint PublicKey) (PublicKey, uint8, error) {
 		mint[:],
 	}
 	return FindProgramAddress(seed, TokenMetadataProgramID)
+}
+
+// Get the marketAuthority(PDA) from the Market Initialization
+func GetAssociatedAuthority(programID PublicKey, marketAddr PublicKey) (PublicKey, uint8, error) {
+	var address PublicKey
+	var err error
+	bumpSeed := uint8(0)
+	endSeed := []byte{0, 0, 0, 0, 0, 0, 0}
+	for bumpSeed < 100 {
+		address, err = CreateProgramAddress([][]byte{marketAddr[:], {byte(bumpSeed)}, endSeed}, programID)
+		if err == nil {
+			return address, bumpSeed, nil
+		}
+		bumpSeed++
+	}
+	return PublicKey{}, bumpSeed, errors.New("unable to find a valid program address")
 }
